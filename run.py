@@ -6,25 +6,65 @@
 #########################################
 
 import tkinter as tk
-import tkinter.messagebox
+import tkinter.messagebox as MessageBox
 from tkinter.ttk import Separator
+import time
+import threading
+from pymouse import PyMouse
 
-import image
+from image import take_screen_shot, img_to_text
+
+notStop = False
+
+def click():
+    mouse = PyMouse()
+    xPos, yPos = mouse.position()
+    mouse.click(xPos, yPos, 2)
+    time.sleep(0.2)
+    mouse.click(xPos, yPos, 2)
+
+def detect(x, y, w, h):
+    
+    global notStop
+
+    while notStop:
+        take_screen_shot(x, y, w, h)
+        if "Fishing Bobber splashes" in img_to_text():
+            click()
+        time.sleep(0.2)
+
+    print("end")
+    return
 
 def start():
 
-    # x = E1.get()
-    # y = E2.get()
-    # w = E3.get()
-    # h = E4.get()
-    
-    # image.take_screen_shot(x, y, w, h)
+    global notStop
 
-    mainBtn['command'] = 'end'
-    mainBtn['text'] = '关闭'
+    x = E1.get()
+    y = E2.get()
+    w = E3.get()
+    h = E4.get()
+    click()
+    if not x or not y or not w or not h:
+        MessageBox.showwarning('错误','缺少检测范围。请框选或手动输入数据')
+        return
+
+    mainBtn['command'] = end
+    mainBtn['text'] = '停止'
+
+    notStop = True
+
+    thread = threading.Thread(target=detect, args=(x, y, w, h))
+    thread.start()
 
 def end():
-    print('ended')
+
+    global notStop
+    notStop = False
+
+    mainBtn['command'] = start
+    mainBtn['text'] = '启动'
+
 def select():
     print('selecting')
 
