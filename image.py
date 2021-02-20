@@ -13,7 +13,6 @@ import cv2
 def take_screen_shot(x, y, w, h):
     img = pyautogui.screenshot(region=[x, y, w, h])
     img.save(".\\img.png")
-    print("took")
 
 def img_to_text():
     img = cv2.imread('.\\img.png', 1)
@@ -23,5 +22,4 @@ def img_to_text():
 
     image = Image.open('.\\img_dst.png')
     text = pytesseract.image_to_string(image, lang='eng')
-    print(text)
     return text
