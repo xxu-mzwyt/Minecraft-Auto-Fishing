@@ -45,9 +45,11 @@ def detect(x, y, w, h):
     while notStop:
         take_screen_shot(x, y, w, h)
         if "Fishing Bobber splashes" in img_to_text():
+            # print('click')
             click()
         else:
             firstSound = True
+        # time.sleep(0.2)
 
     return
 
@@ -103,9 +105,9 @@ def select():
     selWraper.pack(expand=True)
 
 def help():
-    print('help')
+    MessageBox.showinfo('尚未更新', 'developing')
 def about():
-    print('about')
+    MessageBox.showinfo('关于','作者b站：麦兹_mzWyt\nGitHub：mzWyt')
 
 root = tk.Tk()
 root.geometry('300x180')

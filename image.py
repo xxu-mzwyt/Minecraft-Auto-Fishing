@@ -22,4 +22,5 @@ def img_to_text():
 
     image = Image.open('.\\img_dst.png')
     text = pytesseract.image_to_string(image, lang='eng')
+    # print(text)
     return text
