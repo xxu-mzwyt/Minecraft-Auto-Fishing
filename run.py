@@ -13,7 +13,7 @@ import time
 import threading
 from pymouse import PyMouse
 
-from image import take_screenshot, img_process, img_init
+from image import take_screenshot, image_convert, image_process
 
 notStop = False
 firstSound = True
@@ -46,16 +46,12 @@ def detect(x, y, w, h, mode):  # 检测函数（分线程）
 
     while notStop:
         take_screenshot(x, y, w, h)
-        # if "Fishing Bobber splashes" in img_to_text():
-        #     # print('click')
-        #     click()
-        # else:
-        #     firstSound = True
-        # # time.sleep(0.2)
-        # pass
-        h1, w1 = img_init(0)
-        img_process(h1, w1)
-
+        # image_init()
+        if image_process(int(langSetting.get())) == 1:
+            print('click')
+            click()
+        else:
+            firstSound = True
     return
 
 def start():  # 开始检测
@@ -118,6 +114,10 @@ def select():  # 框选检测范围
 
     selWnd = tk.Toplevel(root)
     selWnd.title('框选检测范围')
+
+    if get_data()[0] and get_data()[1] and get_data()[2] and get_data()[3]:
+        selWnd.geometry(str(get_data()[2]) + 'x' + str(get_data()[3]) + '+' + str(get_data()[0]) + '+' + str(get_data()[1]))
+
     selWnd.attributes('-alpha', 0.5)
     selWnd.attributes('-topmost', 1)
 
@@ -127,6 +127,10 @@ def select():  # 框选检测范围
     selBtn = tk.Button(selWraper, text='确认', command=confirm, font=20, width=20, height=2)
     selBtn.pack()
     selWraper.pack(expand=True)
+
+def convert():
+    if MessageBox.askokcancel('自定义模板转换', '请将浮漂溅起水花的字幕截图（尽可能只包含文字部分）重命名为target_oth.png，放置在程序文件夹下并确认'):
+        image_convert()
 
 def help():
     MessageBox.showinfo('尚未更新', 'developing')
@@ -149,6 +153,11 @@ menuBar.add_cascade(label='系统', menu=sysMenu)
 sysMenu.add_command(label='启动', command=start)
 sysMenu.add_command(label='停止', command=end)
 sysMenu.add_command(label='框选检测范围', command=select)
+
+editMenu = tk.Menu(menuBar, tearoff=0)
+menuBar.add_cascade(label='编辑', menu=editMenu)
+editMenu.add_command(label='处理自定义模板', command=convert)
+root.config(menu=menuBar)
 
 helpMenu = tk.Menu(menuBar, tearoff=0)
 menuBar.add_cascade(label='帮助', menu=helpMenu)
@@ -209,8 +218,6 @@ langBtn2 = tk.Radiobutton(langFrame, text='中文简体', value=1, variable=lang
 langBtn2.pack(side='left')
 langBtn3 = tk.Radiobutton(langFrame, text='其他（请按教程配置）', value=2, variable=langSetting)
 langBtn3.pack(side='left')
-
-
 
 try:
     with open('.\\save', 'r') as save:
