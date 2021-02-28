@@ -3,6 +3,7 @@
 #########################################
 # Author: mzWyt
 # Date: 21 Feb 2021
+# Modified: 28 Feb 2021
 #########################################
 
 import tkinter as tk
@@ -12,22 +13,23 @@ import time
 import threading
 from pymouse import PyMouse
 
-from image import take_screen_shot, img_to_text
+from image import take_screenshot, img_process, img_init
 
 notStop = False
 firstSound = True
 
-def on_closing():
+def on_closing():  # 关闭窗口时保存坐标
     with open('.\\save', 'w') as save:
         for i in get_data():
             save.write(i)
             save.write(' ')
+        save.write(str(langSetting.get()))
         root.destroy()
 
-def get_data():
+def get_data():  # 获取坐标信息
     return E1.get(), E2.get(), E3.get(), E4.get()
 
-def detect(x, y, w, h):
+def detect(x, y, w, h, mode):  # 检测函数（分线程）
     global notStop, firstSound
 
     def click():
@@ -43,20 +45,24 @@ def detect(x, y, w, h):
         mouse.click(xPos, yPos, 2)
 
     while notStop:
-        take_screen_shot(x, y, w, h)
-        if "Fishing Bobber splashes" in img_to_text():
-            # print('click')
-            click()
-        else:
-            firstSound = True
-        # time.sleep(0.2)
+        take_screenshot(x, y, w, h)
+        # if "Fishing Bobber splashes" in img_to_text():
+        #     # print('click')
+        #     click()
+        # else:
+        #     firstSound = True
+        # # time.sleep(0.2)
+        # pass
+        h1, w1 = img_init(0)
+        img_process(h1, w1)
 
     return
 
-def start():
+def start():  # 开始检测
     global notStop
 
     x, y, w, h = get_data()
+    mode = langSetting.get()
 
     if not x or not y or not w or not h:
         MessageBox.showwarning('错误','缺少检测范围。请框选或手动输入数据')
@@ -64,20 +70,38 @@ def start():
 
     mainBtn['command'] = end
     mainBtn['text'] = '停止'
+    
+    selectBtn['state'] = 'disabled'
+    E1['state'] = 'disabled'
+    E2['state'] = 'disabled'
+    E3['state'] = 'disabled'
+    E4['state'] = 'disabled'
+    langBtn1['state'] = 'disabled'
+    langBtn2['state'] = 'disabled'
+    langBtn3['state'] = 'disabled'
 
     notStop = True
 
-    thread = threading.Thread(target=detect, args=(x, y, w, h))
+    thread = threading.Thread(target=detect, args=(x, y, w, h, mode))
     thread.start()
 
-def end():
+def end():  # 停止检测
     global notStop
     notStop = False
 
     mainBtn['command'] = start
     mainBtn['text'] = '启动'
 
-def select():
+    selectBtn['state'] = 'normal'
+    E1['state'] = 'normal'
+    E2['state'] = 'normal'
+    E3['state'] = 'normal'
+    E4['state'] = 'normal'
+    langBtn1['state'] = 'normal'
+    langBtn2['state'] = 'normal'
+    langBtn3['state'] = 'normal'
+
+def select():  # 框选检测范围
 
     def confirm():
         E1.delete(0, 'end')
@@ -110,7 +134,7 @@ def about():
     MessageBox.showinfo('关于','作者b站：麦兹_mzWyt\nGitHub：mzWyt')
 
 root = tk.Tk()
-root.geometry('300x180')
+root.geometry('300x230')
 root.resizable(0,0)
 root.title('自动钓鱼 by mzWyt')
 root.iconbitmap('.\\fav.ico')
@@ -162,16 +186,6 @@ L4.pack(side='left')
 E4 = tk.Entry(areaFrame, width=6)
 E4.pack(side='left')
 
-try:
-    with open('.\\save', 'r') as save:
-        saveData = save.read().split(' ')
-        E1.insert(0, saveData[0])
-        E2.insert(0, saveData[1])
-        E3.insert(0, saveData[2])
-        E4.insert(0, saveData[3])
-except:
-    pass
-
 selectFrame = tk.Frame(root, bd=5)
 selectFrame.pack()
 selectBtn = tk.Button(selectFrame, text='框选检测范围', command=select)
@@ -179,5 +193,37 @@ selectBtn.pack()
 
 sepLine2 = Separator(root, orient='horizontal')
 sepLine2.pack(fill='x')
+
+langLbl = tk.Label(root, text='字幕语言：')
+langLbl.pack()
+
+langSetting = tk.IntVar()
+langSetting.set(0)
+
+
+langFrame = tk.Frame(root)
+langFrame.pack()
+langBtn1 = tk.Radiobutton(langFrame, text='英文', value=0, variable=langSetting)
+langBtn1.pack(side='left')
+langBtn2 = tk.Radiobutton(langFrame, text='中文简体', value=1, variable=langSetting)
+langBtn2.pack(side='left')
+langBtn3 = tk.Radiobutton(langFrame, text='其他（请按教程配置）', value=2, variable=langSetting)
+langBtn3.pack(side='left')
+
+
+
+try:
+    with open('.\\save', 'r') as save:
+        saveData = save.read().split(' ')
+        E1.insert(0, saveData[0])
+        E2.insert(0, saveData[1])
+        E3.insert(0, saveData[2])
+        E4.insert(0, saveData[3])
+        if saveData[4]:
+            langSetting.set(saveData[4])
+        else:
+            langSetting.set(0)
+except:
+    pass
 
 root.mainloop()
