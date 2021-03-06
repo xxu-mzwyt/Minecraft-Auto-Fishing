@@ -18,12 +18,6 @@ def take_screenshot(x, y, w, h):  # 截图
     img = pyautogui.screenshot(region=[x, y, w, h]) 
     img.save(".\\img.png")
 
-def image_convert():
-    img = cv2.imread('.\\target_oth.png', 1)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # retval, dst = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
-    cv2.imwrite('.\\target_oth.png', dst)
-
 def image_process(mode):
     img = cv2.imread('.\\img.png', 1)  # 读入截图
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # 灰度

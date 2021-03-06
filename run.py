@@ -13,7 +13,7 @@ import time
 import threading
 from pymouse import PyMouse
 
-from image import take_screenshot, image_convert, image_process
+from image import take_screenshot, image_process
 
 notStop = False
 firstSound = True
@@ -129,11 +129,12 @@ def select():  # 框选检测范围
     selWraper.pack(expand=True)
 
 def convert():
-    if MessageBox.askokcancel('自定义模板转换', '请将浮漂溅起水花的字幕截图（尽可能只包含文字部分）重命名为target_oth.png，放置在程序文件夹下并确认'):
-        image_convert()
+    # if MessageBox.askokcancel('自定义模板转换', '请将浮漂溅起水花的字幕截图（尽可能只包含文字部分）重命名为target_oth.png，放置在程序文件夹下并确认'):
+        # image_convert()
+    MessageBox.showinfo('该功能已经升级', '无需转换，直接将“浮漂：溅起水花”的字幕截图（尽可能只包含文字部分）重命名为target_oth.png，放置在程序文件夹下即可')
 
 def help():
-    MessageBox.showinfo('尚未更新', 'developing')
+    MessageBox.showinfo('Bilibili教程视频', 'https://www.bilibili.com/video/BV1ar4y1A7sq')
 def about():
     MessageBox.showinfo('关于','作者b站：麦兹_mzWyt\nGitHub：mzWyt')
 
@@ -226,10 +227,7 @@ try:
         E2.insert(0, saveData[1])
         E3.insert(0, saveData[2])
         E4.insert(0, saveData[3])
-        if saveData[4]:
-            langSetting.set(saveData[4])
-        else:
-            langSetting.set(0)
+        langSetting.set(saveData[4])
 except:
     pass
 
