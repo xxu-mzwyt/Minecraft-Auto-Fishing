@@ -26,10 +26,14 @@ def image_process(mode):
     template = cv2.imread(langs[mode], 1)
     template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
 
-    result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
+    result = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)  # 模板匹配
     cv2.normalize(result, result, 0, 1, cv2.NORM_MINMAX, -1)
 
-    loc = np.where(result >= 0.5)
+    # 以下为统计匹配个数：
+    # 由于阈值问题，模板匹配基本不会输出false
+    # 因此，统计大于0.5的匹配个数，如果匹配成功，个数应较少（少于等于8）
+
+    loc = np.where(result >= 0.5) 
 
     cnt = 0
     for i in zip(*loc[::-1]):
