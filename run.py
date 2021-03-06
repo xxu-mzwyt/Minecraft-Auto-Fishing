@@ -48,7 +48,7 @@ def detect(x, y, w, h, mode):  # 检测函数（分线程）
         take_screenshot(x, y, w, h)
         # image_init()
         if image_process(int(langSetting.get())) == 1:
-            print('click')
+            # print('click')
             click()
         else:
             firstSound = True

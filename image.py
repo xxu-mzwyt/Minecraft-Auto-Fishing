@@ -33,12 +33,15 @@ def image_process(mode):
     # 由于阈值问题，模板匹配基本不会输出false
     # 因此，统计大于0.5的匹配个数，如果匹配成功，个数应较少（少于等于8）
 
-    loc = np.where(result >= 0.5) 
+    loc = np.where(result >= 0.3)
 
     cnt = 0
     for i in zip(*loc[::-1]):
         cnt += 1
-    print(cnt)
-    if cnt > 0 and cnt <= 8:
+    # print(cnt)
+
+    thresholds = [100, 30, 50]
+    if cnt > 0 and cnt <= thresholds[mode]:
         return True
+
     return False
