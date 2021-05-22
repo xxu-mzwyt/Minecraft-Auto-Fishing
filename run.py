@@ -18,6 +18,7 @@ from image import take_screenshot, image_process
 notStop = False
 firstSound = True
 
+
 def on_closing():  # 关闭窗口时保存坐标
     with open('.\\save', 'w') as save:
         for i in get_data():
@@ -26,8 +27,10 @@ def on_closing():  # 关闭窗口时保存坐标
         save.write(str(langSetting.get()))
         root.destroy()
 
+
 def get_data():  # 获取坐标信息
     return E1.get(), E2.get(), E3.get(), E4.get()
+
 
 def detect(x, y, w, h, mode):  # 检测函数（分线程）
     global notStop, firstSound
@@ -35,9 +38,9 @@ def detect(x, y, w, h, mode):  # 检测函数（分线程）
     def click():
         global firstSound
         if not firstSound:
-            return 
+            return
         firstSound = False
-    
+
         mouse = PyMouse()
         xPos, yPos = mouse.position()
         mouse.click(xPos, yPos, 2)
@@ -45,14 +48,15 @@ def detect(x, y, w, h, mode):  # 检测函数（分线程）
         mouse.click(xPos, yPos, 2)
 
     while notStop:
-        take_screenshot(x, y, w, h)
+        img=take_screenshot(x, y, w, h)
         # image_init()
-        if image_process(int(langSetting.get())) == 1:
-            # print('click')
+        if image_process(int(langSetting.get()),img) == 1:
+            print('找到了 进行click')
             click()
         else:
             firstSound = True
     return
+
 
 def start():  # 开始检测
     global notStop
@@ -61,12 +65,12 @@ def start():  # 开始检测
     mode = langSetting.get()
 
     if not x or not y or not w or not h:
-        MessageBox.showwarning('错误','缺少检测范围。请框选或手动输入数据')
+        MessageBox.showwarning('错误', '缺少检测范围。请框选或手动输入数据')
         return
 
     mainBtn['command'] = end
     mainBtn['text'] = '停止'
-    
+
     selectBtn['state'] = 'disabled'
     E1['state'] = 'disabled'
     E2['state'] = 'disabled'
@@ -80,6 +84,7 @@ def start():  # 开始检测
 
     thread = threading.Thread(target=detect, args=(x, y, w, h, mode))
     thread.start()
+
 
 def end():  # 停止检测
     global notStop
@@ -96,6 +101,7 @@ def end():  # 停止检测
     langBtn1['state'] = 'normal'
     langBtn2['state'] = 'normal'
     langBtn3['state'] = 'normal'
+
 
 def select():  # 框选检测范围
 
@@ -116,7 +122,8 @@ def select():  # 框选检测范围
     selWnd.title('框选检测范围')
 
     if get_data()[0] and get_data()[1] and get_data()[2] and get_data()[3]:
-        selWnd.geometry(str(get_data()[2]) + 'x' + str(get_data()[3]) + '+' + str(get_data()[0]) + '+' + str(get_data()[1]))
+        selWnd.geometry(
+            str(get_data()[2]) + 'x' + str(get_data()[3]) + '+' + str(get_data()[0]) + '+' + str(get_data()[1]))
 
     selWnd.attributes('-alpha', 0.5)
     selWnd.attributes('-topmost', 1)
@@ -128,19 +135,24 @@ def select():  # 框选检测范围
     selBtn.pack()
     selWraper.pack(expand=True)
 
+
 def convert():
     # if MessageBox.askokcancel('自定义模板转换', '请将浮漂溅起水花的字幕截图（尽可能只包含文字部分）重命名为target_oth.png，放置在程序文件夹下并确认'):
-        # image_convert()
+    # image_convert()
     MessageBox.showinfo('该功能已经升级', '无需转换，直接将“浮漂：溅起水花”的字幕截图（尽可能只包含文字部分）重命名为target_oth.png，放置在程序文件夹下即可')
+
 
 def help():
     MessageBox.showinfo('Bilibili教程视频', 'https://www.bilibili.com/video/BV1ar4y1A7sq')
+
+
 def about():
-    MessageBox.showinfo('关于','作者b站：麦兹_mzWyt\nGitHub：mzWyt')
+    MessageBox.showinfo('关于', '作者b站：麦兹_mzWyt\nGitHub：mzWyt')
+
 
 root = tk.Tk()
 root.geometry('300x230')
-root.resizable(0,0)
+root.resizable(0, 0)
 root.title('自动钓鱼 by mzWyt')
 root.iconbitmap('.\\fav.ico')
 root.attributes('-alpha', 0.8)
@@ -174,7 +186,7 @@ mainBtn.pack(side='top')
 sepLine1 = Separator(root, orient='horizontal')
 sepLine1.pack(fill='x')
 
-areaLbl= tk.Label(root, text='检测范围：')
+areaLbl = tk.Label(root, text='检测范围：')
 areaLbl.pack()
 
 areaFrame = tk.Frame(root)
@@ -209,7 +221,6 @@ langLbl.pack()
 
 langSetting = tk.IntVar()
 langSetting.set(0)
-
 
 langFrame = tk.Frame(root)
 langFrame.pack()
